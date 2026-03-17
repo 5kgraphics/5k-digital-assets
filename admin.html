@@ -1,0 +1,1629 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard - 247 Digital Studio</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Quill Text Editor -->
+    <link href="https://cdn.quilljs.com/1.3.7/quill.snow.css" rel="stylesheet">
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        :root {
+            --primary: #4361ee;
+            --secondary: #3a0ca3;
+            --accent: #7209b7;
+            --light: #f8f9fa;
+            --dark: #212529;
+            --success: #4cc9f0;
+            --gray: #6c757d;
+            --light-gray: #e9ecef;
+            --bg-color: #f5f7fb;
+            --text-color: #212529;
+            --card-bg: white;
+            --nav-bg: white;
+            --sidebar-bg: #1a1a1a;
+            --sidebar-text: #ffffff;
+            --danger: #e63946;
+            --warning: #ff9e00;
+        }
+
+        [data-theme="dark"] {
+            --bg-color: #121212;
+            --text-color: #e9ecef;
+            --card-bg: #1e1e1e;
+            --nav-bg: #1a1a1a;
+            --light-gray: #2d2d2d;
+            --sidebar-bg: #0a0a0a;
+            --sidebar-text: #cccccc;
+        }
+
+        [data-theme="dark"] .ql-toolbar,
+        [data-theme="dark"] .ql-container {
+            background-color: #2d2d2d !important;
+            color: #e9ecef !important;
+            border-color: #444 !important;
+        }
+
+        [data-theme="dark"] .ql-toolbar .ql-stroke {
+            stroke: #e9ecef !important;
+        }
+
+        [data-theme="dark"] .ql-toolbar .ql-fill {
+            fill: #e9ecef !important;
+        }
+
+        [data-theme="dark"] .ql-toolbar .ql-picker-label {
+            color: #e9ecef !important;
+        }
+
+        [data-theme="dark"] .ql-editor {
+            background-color: #1e1e1e !important;
+            color: #e9ecef !important;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            line-height: 1.6;
+            transition: background-color 0.3s, color 0.3s;
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            width: 250px;
+            background-color: var(--sidebar-bg);
+            color: var(--sidebar-text);
+            padding: 1.5rem 0;
+            transition: width 0.3s;
+            flex-shrink: 0;
+            position: fixed;
+            height: 100vh;
+            overflow-y: auto;
+            z-index: 100;
+        }
+
+        .sidebar.collapsed {
+            width: 70px;
+        }
+
+        .sidebar-header {
+            padding: 0 1.5rem 1.5rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .sidebar-header h2 {
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: var(--primary);
+            white-space: nowrap;
+            overflow: hidden;
+        }
+
+        .sidebar.collapsed .sidebar-header h2 {
+            display: none;
+        }
+
+        .toggle-sidebar {
+            background: none;
+            border: none;
+            color: var(--sidebar-text);
+            font-size: 1.2rem;
+            cursor: pointer;
+            padding: 0.5rem;
+            border-radius: 4px;
+            transition: background-color 0.3s;
+        }
+
+        .toggle-sidebar:hover {
+            background-color: rgba(255, 255, 255, 0.1);
+        }
+
+        .sidebar-menu {
+            list-style: none;
+            padding: 1.5rem 0;
+        }
+
+        .sidebar-menu li {
+            margin-bottom: 0.5rem;
+        }
+
+        .sidebar-menu a {
+            display: flex;
+            align-items: center;
+            padding: 0.8rem 1.5rem;
+            color: var(--sidebar-text);
+            text-decoration: none;
+            transition: background-color 0.3s, color 0.3s;
+            white-space: nowrap;
+            overflow: hidden;
+        }
+
+        .sidebar-menu a i {
+            margin-right: 1rem;
+            font-size: 1.2rem;
+            width: 20px;
+            text-align: center;
+        }
+
+        .sidebar.collapsed .sidebar-menu a span {
+            display: none;
+        }
+
+        .sidebar-menu a:hover, .sidebar-menu a.active {
+            background-color: rgba(255, 255, 255, 0.1);
+            color: var(--primary);
+        }
+
+        /* Main Content */
+        .main-content {
+            flex: 1;
+            margin-left: 250px;
+            transition: margin-left 0.3s;
+            padding: 1.5rem;
+        }
+
+        .main-content.expanded {
+            margin-left: 70px;
+        }
+
+        /* Top Bar */
+        .top-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem 0;
+            margin-bottom: 2rem;
+            border-bottom: 1px solid var(--light-gray);
+        }
+
+        .page-title {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--text-color);
+        }
+
+        .admin-actions {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .theme-toggle {
+            background: none;
+            border: none;
+            color: var(--text-color);
+            font-size: 1.2rem;
+            cursor: pointer;
+            padding: 0.5rem;
+            border-radius: 50%;
+            transition: background-color 0.3s;
+        }
+
+        .theme-toggle:hover {
+            background-color: var(--light-gray);
+        }
+
+        .logout-btn {
+            background-color: var(--danger);
+            color: white;
+            border: none;
+            padding: 0.7rem 1.5rem;
+            border-radius: 6px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .logout-btn:hover {
+            background-color: #c1121f;
+        }
+
+        /* Dashboard Content */
+        .dashboard-content {
+            display: none;
+            animation: fadeIn 0.5s ease-in;
+        }
+
+        .dashboard-content.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Stats Cards */
+        .stats-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .stat-card {
+            background-color: var(--card-bg);
+            border-radius: 12px;
+            padding: 1.5rem;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .stat-icon {
+            width: 60px;
+            height: 60px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.8rem;
+        }
+
+        .stat-icon.products {
+            background-color: rgba(67, 97, 238, 0.1);
+            color: var(--primary);
+        }
+
+        .stat-icon.messages {
+            background-color: rgba(76, 201, 240, 0.1);
+            color: var(--success);
+        }
+
+        .stat-icon.blogs {
+            background-color: rgba(114, 9, 183, 0.1);
+            color: var(--accent);
+        }
+
+        .stat-info h3 {
+            font-size: 1.8rem;
+            font-weight: 700;
+            margin-bottom: 0.3rem;
+        }
+
+        .stat-info p {
+            color: var(--gray);
+            font-size: 0.9rem;
+        }
+
+        /* Content Section */
+        .content-section {
+            background-color: var(--card-bg);
+            border-radius: 12px;
+            padding: 2rem;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+            margin-bottom: 2rem;
+        }
+
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid var(--light-gray);
+        }
+
+        .section-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: var(--text-color);
+        }
+
+        .add-btn {
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            padding: 0.7rem 1.5rem;
+            border-radius: 6px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .add-btn:hover {
+            background-color: var(--secondary);
+        }
+
+        /* Tables */
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .data-table th, .data-table td {
+            padding: 1rem;
+            text-align: left;
+            border-bottom: 1px solid var(--light-gray);
+        }
+
+        .data-table th {
+            font-weight: 600;
+            color: var(--text-color);
+            background-color: rgba(0, 0, 0, 0.02);
+        }
+
+        .data-table tr:hover {
+            background-color: rgba(0, 0, 0, 0.02);
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .edit-btn, .delete-btn {
+            padding: 0.5rem;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            font-size: 0.9rem;
+        }
+
+        .edit-btn {
+            background-color: rgba(67, 97, 238, 0.1);
+            color: var(--primary);
+        }
+
+        .edit-btn:hover {
+            background-color: rgba(67, 97, 238, 0.2);
+        }
+
+        .delete-btn {
+            background-color: rgba(230, 57, 70, 0.1);
+            color: var(--danger);
+        }
+
+        .delete-btn:hover {
+            background-color: rgba(230, 57, 70, 0.2);
+        }
+
+        /* Forms */
+        .form-container {
+            background-color: var(--card-bg);
+            border-radius: 12px;
+            padding: 2rem;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .form-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: 1.5rem;
+            color: var(--text-color);
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+            color: var(--text-color);
+        }
+
+        .form-group input,
+        .form-group textarea,
+        .form-group select {
+            width: 100%;
+            padding: 0.8rem;
+            border: 1px solid var(--light-gray);
+            border-radius: 8px;
+            background-color: var(--card-bg);
+            color: var(--text-color);
+            font-size: 1rem;
+            transition: border-color 0.3s;
+        }
+
+        .form-group input:focus,
+        .form-group textarea:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: var(--primary);
+        }
+
+        .form-group textarea {
+            resize: vertical;
+            min-height: 120px;
+        }
+
+        .form-actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 1rem;
+            margin-top: 2rem;
+        }
+
+        .cancel-btn {
+            background-color: transparent;
+            border: 2px solid var(--gray);
+            color: var(--gray);
+            padding: 0.8rem 1.5rem;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .cancel-btn:hover {
+            background-color: var(--gray);
+            color: white;
+        }
+
+        .save-btn {
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            padding: 0.8rem 1.5rem;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .save-btn:hover {
+            background-color: var(--secondary);
+        }
+
+        /* Message Detail */
+        .message-detail {
+            background-color: var(--card-bg);
+            border-radius: 12px;
+            padding: 2rem;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+        }
+
+        .message-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 1.5rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid var(--light-gray);
+        }
+
+        .message-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: var(--text-color);
+        }
+
+        .message-meta {
+            color: var(--gray);
+            font-size: 0.9rem;
+        }
+
+        .message-content {
+            line-height: 1.8;
+            margin-bottom: 2rem;
+        }
+
+        .back-btn {
+            background-color: transparent;
+            border: 2px solid var(--primary);
+            color: var(--primary);
+            padding: 0.8rem 1.5rem;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .back-btn:hover {
+            background-color: var(--primary);
+            color: white;
+        }
+
+        /* Empty State */
+        .empty-state {
+            text-align: center;
+            padding: 3rem;
+            color: var(--gray);
+        }
+
+        .empty-state i {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            color: var(--light-gray);
+        }
+
+        .empty-state h3 {
+            font-size: 1.5rem;
+            margin-bottom: 0.5rem;
+            color: var(--text-color);
+        }
+
+        /* Text Editor Styles */
+        .ql-editor-container {
+            border-radius: 8px;
+            border: 1px solid var(--light-gray);
+            overflow: hidden;
+        }
+
+        .ql-toolbar {
+            border-top: none !important;
+            border-left: none !important;
+            border-right: none !important;
+            border-bottom: 1px solid var(--light-gray) !important;
+        }
+
+        .ql-container {
+            border: none !important;
+            min-height: 200px;
+        }
+
+        /* Responsive Styles */
+        @media (max-width: 992px) {
+            .sidebar {
+                width: 70px;
+            }
+            
+            .sidebar-header h2 {
+                display: none;
+            }
+            
+            .sidebar-menu a span {
+                display: none;
+            }
+            
+            .main-content {
+                margin-left: 70px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .sidebar {
+                width: 0;
+                overflow: hidden;
+            }
+            
+            .sidebar.active {
+                width: 250px;
+            }
+            
+            .sidebar.active .sidebar-header h2,
+            .sidebar.active .sidebar-menu a span {
+                display: block;
+            }
+            
+            .main-content {
+                margin-left: 0;
+            }
+            
+            .mobile-menu-toggle {
+                display: block;
+            }
+            
+            .stats-cards {
+                grid-template-columns: 1fr;
+            }
+            
+            .data-table {
+                display: block;
+                overflow-x: auto;
+            }
+        }
+
+        @media (max-width: 576px) {
+            .top-bar {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 1rem;
+            }
+            
+            .admin-actions {
+                width: 100%;
+                justify-content: space-between;
+            }
+            
+            .section-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 1rem;
+            }
+            
+            .form-actions {
+                flex-direction: column;
+            }
+        }
+
+        /* Mobile Menu Toggle */
+        .mobile-menu-toggle {
+            display: none;
+            background: none;
+            border: none;
+            color: var(--text-color);
+            font-size: 1.5rem;
+            cursor: pointer;
+            padding: 0.5rem;
+            border-radius: 4px;
+            transition: background-color 0.3s;
+        }
+
+        @media (max-width: 768px) {
+            .mobile-menu-toggle {
+                display: block;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Sidebar -->
+    <aside class="sidebar">
+        <div class="sidebar-header">
+            <h2>Admin Dashboard</h2>
+            <button class="toggle-sidebar">
+                <i class="fas fa-bars"></i>
+            </button>
+        </div>
+        <ul class="sidebar-menu">
+            <li><a href="#" class="active" data-section="dashboard"><i class="fas fa-tachometer-alt"></i> <span>Dashboard</span></a></li>
+            <li><a href="#" data-section="products"><i class="fas fa-box"></i> <span>Digital Products</span></a></li>
+            <li><a href="#" data-section="messages"><i class="fas fa-envelope"></i> <span>Contact Messages</span></a></li>
+            <li><a href="#" data-section="blogs"><i class="fas fa-blog"></i> <span>Blog Posts</span></a></li>
+        </ul>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <!-- Top Bar -->
+        <div class="top-bar">
+            <button class="mobile-menu-toggle">
+                <i class="fas fa-bars"></i>
+            </button>
+            <h1 class="page-title">Dashboard</h1>
+            <div class="admin-actions">
+                <button class="theme-toggle" id="themeToggle">
+                    <i class="fas fa-moon"></i>
+                </button>
+                <button class="logout-btn">
+                    <i class="fas fa-sign-out-alt"></i> Logout
+                </button>
+            </div>
+        </div>
+
+        <!-- Dashboard Content -->
+        <div class="dashboard-content active" id="dashboard-section">
+            <!-- Stats Cards -->
+            <div class="stats-cards">
+                <div class="stat-card">
+                    <div class="stat-icon products">
+                        <i class="fas fa-box"></i>
+                    </div>
+                    <div class="stat-info">
+                        <h3 id="products-count">0</h3>
+                        <p>Digital Products</p>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon messages">
+                        <i class="fas fa-envelope"></i>
+                    </div>
+                    <div class="stat-info">
+                        <h3 id="messages-count">0</h3>
+                        <p>Contact Messages</p>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon blogs">
+                        <i class="fas fa-blog"></i>
+                    </div>
+                    <div class="stat-info">
+                        <h3 id="blogs-count">0</h3>
+                        <p>Blog Posts</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Recent Activity -->
+            <div class="content-section">
+                <div class="section-header">
+                    <h2 class="section-title">Recent Activity</h2>
+                </div>
+                <div class="empty-state">
+                    <i class="fas fa-chart-line"></i>
+                    <h3>No Recent Activity</h3>
+                    <p>Activity will appear here as you manage your content</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Products Section -->
+        <div class="dashboard-content" id="products-section">
+            <div class="content-section">
+                <div class="section-header">
+                    <h2 class="section-title">Digital Products</h2>
+                    <button class="add-btn" id="add-product-btn">
+                        <i class="fas fa-plus"></i> Add Product
+                    </button>
+                </div>
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th>Category</th>
+                            <th>Size</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="products-table-body">
+                        <!-- Products will be dynamically inserted here -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Add/Edit Product Form -->
+        <div class="dashboard-content" id="product-form-section">
+            <div class="form-container">
+                <h2 class="form-title" id="product-form-title">Add New Product</h2>
+                <form id="product-form">
+                    <div class="form-group">
+                        <label for="product-name">Product Name</label>
+                        <input type="text" id="product-name" name="product-name" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="product-image">Image URL</label>
+                        <input type="url" id="product-image" name="product-image" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="product-category">Category</label>
+                        <select id="product-category" name="product-category" required>
+                            <option value="">Select a category</option>
+                            <option value="Audio">Audio</option>
+                            <option value="Brush">Brush</option>
+                            <option value="Course">Course</option>
+                            <option value="Ebook">Ebook</option>
+                            <option value="Font">Font</option>
+                            <option value="Preset">Preset</option>
+                            <option value="Template">Template</option>
+                            <option value="Texture">Texture</option>
+                            <option value="UI-Kit">UI-Kit</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="product-description">Description</label>
+                        <div id="product-description-editor" class="ql-editor-container">
+                            <!-- Quill editor will be initialized here -->
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="product-size">Size</label>
+                        <input type="text" id="product-size" name="product-size" placeholder="e.g., 50MB, 120 pages" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="product-download">Download Link</label>
+                        <input type="url" id="product-download" name="product-download" required>
+                    </div>
+                    <div class="form-actions">
+                        <button type="button" class="cancel-btn" id="cancel-product-btn">Cancel</button>
+                        <button type="submit" class="save-btn">Save Product</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Messages Section -->
+        <div class="dashboard-content" id="messages-section">
+            <div class="content-section">
+                <div class="section-header">
+                    <h2 class="section-title">Contact Messages</h2>
+                </div>
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th>Email</th>
+                            <th>Subject</th>
+                            <th>Date</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="messages-table-body">
+                        <!-- Messages will be dynamically inserted here -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Message Detail -->
+        <div class="dashboard-content" id="message-detail-section">
+            <div class="message-detail">
+                <div class="message-header">
+                    <h2 class="message-title" id="message-detail-subject"></h2>
+                    <div class="message-meta">
+                        <p id="message-detail-sender"></p>
+                        <p id="message-detail-date"></p>
+                    </div>
+                </div>
+                <div class="message-content" id="message-detail-content"></div>
+                <button class="back-btn" id="back-to-messages-btn">
+                    <i class="fas fa-arrow-left"></i> Back to Messages
+                </button>
+            </div>
+        </div>
+
+        <!-- Blogs Section -->
+        <div class="dashboard-content" id="blogs-section">
+            <div class="content-section">
+                <div class="section-header">
+                    <h2 class="section-title">Blog Posts</h2>
+                    <button class="add-btn" id="add-blog-btn">
+                        <i class="fas fa-plus"></i> Add Blog Post
+                    </button>
+                </div>
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Title</th>
+                            <th>Date</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="blogs-table-body">
+                        <!-- Blog posts will be dynamically inserted here -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Add/Edit Blog Form -->
+        <div class="dashboard-content" id="blog-form-section">
+            <div class="form-container">
+                <h2 class="form-title" id="blog-form-title">Add New Blog Post</h2>
+                <form id="blog-form">
+                    <div class="form-group">
+                        <label for="blog-title">Blog Title</label>
+                        <input type="text" id="blog-title" name="blog-title" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="blog-image">Image URL</label>
+                        <input type="url" id="blog-image" name="blog-image" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="blog-description">Description</label>
+                        <div id="blog-description-editor" class="ql-editor-container">
+                            <!-- Quill editor will be initialized here -->
+                        </div>
+                    </div>
+                    <div class="form-actions">
+                        <button type="button" class="cancel-btn" id="cancel-blog-btn">Cancel</button>
+                        <button type="submit" class="save-btn">Save Blog Post</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </main>
+
+    <!-- Quill JS -->
+    <script src="https://cdn.quilljs.com/1.3.7/quill.js"></script>
+    <script>
+        // Initialize Quill text editors
+        let productEditor = null;
+        let blogEditor = null;
+
+        function initializeTextEditors() {
+            // Product description editor
+            productEditor = new Quill('#product-description-editor', {
+                modules: {
+                    toolbar: [
+                        [{ 'header': [1, 2, 3, false] }],
+                        ['bold', 'italic', 'underline', 'strike'],
+                        [{ 'align': [] }],
+                        [{ 'list': 'ordered'}, { 'list': 'bullet' }],
+                        [{ 'color': [] }, { 'background': [] }],
+                        ['link', 'image'],
+                        ['clean']
+                    ]
+                },
+                placeholder: 'Enter product description...',
+                theme: 'snow'
+            });
+
+            // Blog description editor
+            blogEditor = new Quill('#blog-description-editor', {
+                modules: {
+                    toolbar: [
+                        [{ 'header': [1, 2, 3, false] }],
+                        ['bold', 'italic', 'underline', 'strike'],
+                        [{ 'align': [] }],
+                        [{ 'list': 'ordered'}, { 'list': 'bullet' }],
+                        [{ 'color': [] }, { 'background': [] }],
+                        ['link', 'image', 'blockquote', 'code-block'],
+                        ['clean']
+                    ]
+                },
+                placeholder: 'Enter blog content...',
+                theme: 'snow'
+            });
+
+            // Apply theme to editors
+            applyThemeToEditors();
+        }
+
+        function applyThemeToEditors() {
+            const isDarkTheme = document.documentElement.getAttribute('data-theme') === 'dark';
+            
+            if (isDarkTheme) {
+                document.querySelectorAll('.ql-toolbar').forEach(toolbar => {
+                    toolbar.classList.add('ql-snow');
+                    toolbar.style.backgroundColor = '#2d2d2d';
+                    toolbar.style.borderColor = '#444';
+                });
+                
+                document.querySelectorAll('.ql-container').forEach(container => {
+                    container.classList.add('ql-snow');
+                    container.style.backgroundColor = '#1e1e1e';
+                    container.style.borderColor = '#444';
+                });
+                
+                document.querySelectorAll('.ql-editor').forEach(editor => {
+                    editor.style.color = '#e9ecef';
+                });
+            }
+        }
+
+        // Firebase configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyCA6yVgH1snvuW-BOGbi4YX8xIGBRU4TKQ",
+            authDomain: "digital-studio-19b83.firebaseapp.com",
+            projectId: "digital-studio-19b83",
+            storageBucket: "digital-studio-19b83.firebasestorage.app",
+            messagingSenderId: "156700490401",
+            appId: "1:156700490401:web:aaacdae02f2b8ee3530ee0",
+            measurementId: "G-3GKD8FM4D9"
+        };
+
+        // Initialize Firebase
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.firestore();
+        const auth = firebase.auth();
+
+        // Data storage
+        let products = [];
+        let messages = [];
+        let blogs = [];
+
+        // DOM Elements
+        const sidebar = document.querySelector('.sidebar');
+        const toggleSidebar = document.querySelector('.toggle-sidebar');
+        const mobileMenuToggle = document.querySelector('.mobile-menu-toggle');
+        const mainContent = document.querySelector('.main-content');
+        const themeToggle = document.getElementById('themeToggle');
+        const sidebarLinks = document.querySelectorAll('.sidebar-menu a');
+        const dashboardSections = document.querySelectorAll('.dashboard-content');
+        
+        // Stats elements
+        const productsCount = document.getElementById('products-count');
+        const messagesCount = document.getElementById('messages-count');
+        const blogsCount = document.getElementById('blogs-count');
+        
+        // Products elements
+        const productsSection = document.getElementById('products-section');
+        const productFormSection = document.getElementById('product-form-section');
+        const addProductBtn = document.getElementById('add-product-btn');
+        const cancelProductBtn = document.getElementById('cancel-product-btn');
+        const productForm = document.getElementById('product-form');
+        const productFormTitle = document.getElementById('product-form-title');
+        const productsTableBody = document.getElementById('products-table-body');
+        
+        // Messages elements
+        const messagesSection = document.getElementById('messages-section');
+        const messageDetailSection = document.getElementById('message-detail-section');
+        const messagesTableBody = document.getElementById('messages-table-body');
+        const backToMessagesBtn = document.getElementById('back-to-messages-btn');
+        const messageDetailSubject = document.getElementById('message-detail-subject');
+        const messageDetailSender = document.getElementById('message-detail-sender');
+        const messageDetailDate = document.getElementById('message-detail-date');
+        const messageDetailContent = document.getElementById('message-detail-content');
+        
+        // Blogs elements
+        const blogsSection = document.getElementById('blogs-section');
+        const blogFormSection = document.getElementById('blog-form-section');
+        const addBlogBtn = document.getElementById('add-blog-btn');
+        const cancelBlogBtn = document.getElementById('cancel-blog-btn');
+        const blogForm = document.getElementById('blog-form');
+        const blogFormTitle = document.getElementById('blog-form-title');
+        const blogsTableBody = document.getElementById('blogs-table-body');
+        
+        // Current editing IDs
+        let editingProductId = null;
+        let editingBlogId = null;
+
+        // Initialize the dashboard
+        document.addEventListener('DOMContentLoaded', function() {
+            checkAuthState();
+            setupEventListeners();
+            checkThemePreference();
+            initializeTextEditors();
+        });
+
+        // SECURE AUTHENTICATION CHECK - UPDATED VERSION
+        function checkAuthState() {
+            auth.onAuthStateChanged(async user => { 
+                if (user) {
+                    try {
+                        // 1. Fetch the user's token with custom claims
+                        const token = await user.getIdTokenResult(true); // Force refresh to get latest claims
+                        
+                        // 2. Check if the 'admin' claim exists and is true
+                        if (token.claims.admin === true) {
+                            // SUCCESS: User is the designated admin. Load the dashboard.
+                            console.log("Admin access granted");
+                            loadDashboardData();
+                        } else {
+                            // FAIL: User is logged in but doesn't have admin privileges
+                            console.warn("Unauthorized user attempted admin access:", user.email);
+                            alert("Access Denied. You are not authorized to view the admin dashboard.");
+                            await auth.signOut(); // Force log out
+                            window.location.href = 'admin-login.html';
+                        }
+                    } catch (error) {
+                        console.error("Error checking admin privileges:", error);
+                        alert("Error verifying access. Please try again.");
+                        await auth.signOut();
+                        window.location.href = 'admin-login.html';
+                    }
+                } else {
+                    // User is not signed in at all, redirect to login
+                    window.location.href = 'admin-login.html';
+                }
+            });
+        }
+
+        // Load all dashboard data from Firebase
+        async function loadDashboardData() {
+            try {
+                await Promise.all([
+                    loadProducts(),
+                    loadMessages(),
+                    loadBlogs()
+                ]);
+                updateStats();
+            } catch (error) {
+                console.error('Error loading dashboard data:', error);
+            }
+        }
+
+        // Load products from Firebase
+        async function loadProducts() {
+            try {
+                const productsSnapshot = await db.collection('products').orderBy('createdAt', 'desc').get();
+                products = [];
+                productsSnapshot.forEach(doc => {
+                    products.push({
+                        id: doc.id,
+                        ...doc.data()
+                    });
+                });
+                displayProducts();
+            } catch (error) {
+                console.error('Error loading products:', error);
+            }
+        }
+
+        // Load messages from Firebase
+        async function loadMessages() {
+            try {
+                const messagesSnapshot = await db.collection('contactMessages').orderBy('timestamp', 'desc').get();
+                messages = [];
+                messagesSnapshot.forEach(doc => {
+                    messages.push({
+                        id: doc.id,
+                        ...doc.data()
+                    });
+                });
+                displayMessages();
+            } catch (error) {
+                console.error('Error loading messages:', error);
+            }
+        }
+
+        // Load blogs from Firebase
+        async function loadBlogs() {
+            try {
+                const blogsSnapshot = await db.collection('blogs').orderBy('date', 'desc').get();
+                blogs = [];
+                blogsSnapshot.forEach(doc => {
+                    blogs.push({
+                        id: doc.id,
+                        ...doc.data()
+                    });
+                });
+                displayBlogs();
+            } catch (error) {
+                console.error('Error loading blogs:', error);
+            }
+        }
+
+        // Update stats counters
+        function updateStats() {
+            productsCount.textContent = products.length;
+            messagesCount.textContent = messages.length;
+            blogsCount.textContent = blogs.length;
+        }
+
+        // Set up event listeners
+        function setupEventListeners() {
+            // Sidebar toggle
+            toggleSidebar.addEventListener('click', function() {
+                sidebar.classList.toggle('collapsed');
+                mainContent.classList.toggle('expanded');
+            });
+
+            // Mobile menu toggle
+            mobileMenuToggle.addEventListener('click', function() {
+                sidebar.classList.toggle('active');
+            });
+
+            // Theme toggle
+            themeToggle.addEventListener('click', toggleTheme);
+
+            // Sidebar navigation
+            sidebarLinks.forEach(link => {
+                link.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    
+                    // Remove active class from all links
+                    sidebarLinks.forEach(l => l.classList.remove('active'));
+                    
+                    // Add active class to clicked link
+                    this.classList.add('active');
+                    
+                    // Show the corresponding section
+                    const sectionId = this.getAttribute('data-section') + '-section';
+                    showSection(sectionId);
+                    
+                    // Close mobile menu if open
+                    if (window.innerWidth <= 768) {
+                        sidebar.classList.remove('active');
+                    }
+                });
+            });
+
+            // Products
+            addProductBtn.addEventListener('click', showAddProductForm);
+            cancelProductBtn.addEventListener('click', cancelProductForm);
+            productForm.addEventListener('submit', saveProduct);
+
+            // Messages
+            backToMessagesBtn.addEventListener('click', function() {
+                showSection('messages-section');
+            });
+
+            // Blogs
+            addBlogBtn.addEventListener('click', showAddBlogForm);
+            cancelBlogBtn.addEventListener('click', cancelBlogForm);
+            blogForm.addEventListener('submit', saveBlog);
+
+            // Logout button
+            document.querySelector('.logout-btn').addEventListener('click', function() {
+                auth.signOut().then(() => {
+                    window.location.href = 'admin-login.html';
+                });
+            });
+        }
+
+        // Show a specific section
+        function showSection(sectionId) {
+            dashboardSections.forEach(section => {
+                section.classList.remove('active');
+            });
+            
+            document.getElementById(sectionId).classList.add('active');
+            
+            // Update page title
+            const pageTitle = document.querySelector('.page-title');
+            if (sectionId === 'dashboard-section') {
+                pageTitle.textContent = 'Dashboard';
+            } else if (sectionId === 'products-section') {
+                pageTitle.textContent = 'Digital Products';
+            } else if (sectionId === 'messages-section') {
+                pageTitle.textContent = 'Contact Messages';
+            } else if (sectionId === 'blogs-section') {
+                pageTitle.textContent = 'Blog Posts';
+            } else if (sectionId === 'product-form-section') {
+                pageTitle.textContent = editingProductId ? 'Edit Product' : 'Add Product';
+            } else if (sectionId === 'blog-form-section') {
+                pageTitle.textContent = editingBlogId ? 'Edit Blog Post' : 'Add Blog Post';
+            } else if (sectionId === 'message-detail-section') {
+                pageTitle.textContent = 'Message Detail';
+            }
+        }
+
+        // Theme functionality
+        function toggleTheme() {
+            const currentTheme = document.documentElement.getAttribute('data-theme');
+            const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+            
+            document.documentElement.setAttribute('data-theme', newTheme);
+            localStorage.setItem('theme', newTheme);
+            
+            // Update theme toggle icon
+            const themeIcon = themeToggle.querySelector('i');
+            themeIcon.className = newTheme === 'dark' ? 'fas fa-sun' : 'fas fa-moon';
+            
+            // Apply theme to editors
+            applyThemeToEditors();
+        }
+
+        function checkThemePreference() {
+            const savedTheme = localStorage.getItem('theme') || 'light';
+            document.documentElement.setAttribute('data-theme', savedTheme);
+            
+            // Set theme toggle icon
+            const themeIcon = themeToggle.querySelector('i');
+            themeIcon.className = savedTheme === 'dark' ? 'fas fa-sun' : 'fas fa-moon';
+        }
+
+        // Products functionality
+        function displayProducts() {
+            productsTableBody.innerHTML = '';
+            
+            if (products.length === 0) {
+                productsTableBody.innerHTML = `
+                    <tr>
+                        <td colspan="4" class="empty-state">
+                            <i class="fas fa-box-open"></i>
+                            <h3>No Products Found</h3>
+                            <p>Add your first digital product to get started</p>
+                        </td>
+                    </tr>
+                `;
+                return;
+            }
+            
+            products.forEach(product => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${product.name}</td>
+                    <td>${product.category}</td>
+                    <td>${product.size}</td>
+                    <td class="action-buttons">
+                        <button class="edit-btn" data-id="${product.id}">
+                            <i class="fas fa-edit"></i> Edit
+                        </button>
+                        <button class="delete-btn" data-id="${product.id}">
+                            <i class="fas fa-trash"></i> Delete
+                        </button>
+                    </td>
+                `;
+                productsTableBody.appendChild(row);
+            });
+            
+            // Add event listeners to edit and delete buttons
+            document.querySelectorAll('.edit-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const productId = this.getAttribute('data-id');
+                    editProduct(productId);
+                });
+            });
+            
+            document.querySelectorAll('.delete-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const productId = this.getAttribute('data-id');
+                    deleteProduct(productId);
+                });
+            });
+        }
+
+        function showAddProductForm() {
+            editingProductId = null;
+            productFormTitle.textContent = 'Add New Product';
+            productForm.reset();
+            if (productEditor) {
+                productEditor.root.innerHTML = '';
+            }
+            showSection('product-form-section');
+        }
+
+        function cancelProductForm() {
+            showSection('products-section');
+        }
+
+        function editProduct(productId) {
+            const product = products.find(p => p.id === productId);
+            if (!product) return;
+            
+            editingProductId = productId;
+            productFormTitle.textContent = 'Edit Product';
+            
+            // Fill form with product data
+            document.getElementById('product-name').value = product.name;
+            document.getElementById('product-image').value = product.image;
+            document.getElementById('product-category').value = product.category;
+            document.getElementById('product-size').value = product.size;
+            document.getElementById('product-download').value = product.download;
+            
+            if (productEditor) {
+                productEditor.root.innerHTML = product.description;
+            }
+            
+            showSection('product-form-section');
+        }
+
+        async function saveProduct(e) {
+            e.preventDefault();
+            
+            const productData = {
+                name: document.getElementById('product-name').value,
+                image: document.getElementById('product-image').value,
+                category: document.getElementById('product-category').value,
+                description: productEditor ? productEditor.root.innerHTML : '',
+                size: document.getElementById('product-size').value,
+                download: document.getElementById('product-download').value,
+                updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+            };
+            
+            try {
+                if (editingProductId) {
+                    // Update existing product
+                    await db.collection('products').doc(editingProductId).update(productData);
+                } else {
+                    // Add new product
+                    productData.createdAt = firebase.firestore.FieldValue.serverTimestamp();
+                    await db.collection('products').add(productData);
+                }
+                
+                // Reload products and show products section
+                await loadProducts();
+                showSection('products-section');
+                updateStats();
+            } catch (error) {
+                console.error('Error saving product:', error);
+                alert('Error saving product. Please try again.');
+            }
+        }
+
+        async function deleteProduct(productId) {
+            if (!confirm('Are you sure you want to delete this product?')) {
+                return;
+            }
+            
+            try {
+                await db.collection('products').doc(productId).delete();
+                await loadProducts();
+                updateStats();
+            } catch (error) {
+                console.error('Error deleting product:', error);
+                alert('Error deleting product. Please try again.');
+            }
+        }
+
+        // Messages functionality
+        function displayMessages() {
+            messagesTableBody.innerHTML = '';
+            
+            if (messages.length === 0) {
+                messagesTableBody.innerHTML = `
+                    <tr>
+                        <td colspan="5" class="empty-state">
+                            <i class="fas fa-envelope-open"></i>
+                            <h3>No Messages</h3>
+                            <p>Contact messages will appear here</p>
+                        </td>
+                    </tr>
+                `;
+                return;
+            }
+            
+            messages.forEach(message => {
+                const date = message.timestamp ? message.timestamp.toDate().toLocaleDateString() : 'N/A';
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${message.name}</td>
+                    <td>${message.email}</td>
+                    <td>${message.subject}</td>
+                    <td>${date}</td>
+                    <td class="action-buttons">
+                        <button class="edit-btn view-message-btn" data-id="${message.id}">
+                            <i class="fas fa-eye"></i> View
+                        </button>
+                        <button class="delete-btn" data-id="${message.id}">
+                            <i class="fas fa-trash"></i> Delete
+                        </button>
+                    </td>
+                `;
+                messagesTableBody.appendChild(row);
+            });
+            
+            // Add event listeners to view and delete buttons
+            document.querySelectorAll('.view-message-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const messageId = this.getAttribute('data-id');
+                    viewMessage(messageId);
+                });
+            });
+            
+            document.querySelectorAll('#messages-table-body .delete-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const messageId = this.getAttribute('data-id');
+                    deleteMessage(messageId);
+                });
+            });
+        }
+
+        function viewMessage(messageId) {
+            const message = messages.find(m => m.id === messageId);
+            if (!message) return;
+            
+            const date = message.timestamp ? message.timestamp.toDate().toLocaleDateString() : 'N/A';
+            
+            messageDetailSubject.textContent = message.subject;
+            messageDetailSender.textContent = `${message.name} (${message.email})`;
+            messageDetailDate.textContent = date;
+            messageDetailContent.textContent = message.message;
+            
+            showSection('message-detail-section');
+        }
+
+        async function deleteMessage(messageId) {
+            if (!confirm('Are you sure you want to delete this message?')) {
+                return;
+            }
+            
+            try {
+                await db.collection('contactMessages').doc(messageId).delete();
+                await loadMessages();
+                updateStats();
+            } catch (error) {
+                console.error('Error deleting message:', error);
+                alert('Error deleting message. Please try again.');
+            }
+        }
+
+        // Blogs functionality
+        function displayBlogs() {
+            blogsTableBody.innerHTML = '';
+            
+            if (blogs.length === 0) {
+                blogsTableBody.innerHTML = `
+                    <tr>
+                        <td colspan="3" class="empty-state">
+                            <i class="fas fa-file-alt"></i>
+                            <h3>No Blog Posts</h3>
+                            <p>Add your first blog post to get started</p>
+                        </td>
+                    </tr>
+                `;
+                return;
+            }
+            
+            blogs.forEach(blog => {
+                const date = blog.date ? blog.date.toDate().toLocaleDateString() : 'N/A';
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${blog.title}</td>
+                    <td>${date}</td>
+                    <td class="action-buttons">
+                        <button class="edit-btn" data-id="${blog.id}">
+                            <i class="fas fa-edit"></i> Edit
+                        </button>
+                        <button class="delete-btn" data-id="${blog.id}">
+                            <i class="fas fa-trash"></i> Delete
+                        </button>
+                    </td>
+                `;
+                blogsTableBody.appendChild(row);
+            });
+            
+            // Add event listeners to edit and delete buttons
+            document.querySelectorAll('#blogs-table-body .edit-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const blogId = this.getAttribute('data-id');
+                    editBlog(blogId);
+                });
+            });
+            
+            document.querySelectorAll('#blogs-table-body .delete-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const blogId = this.getAttribute('data-id');
+                    deleteBlog(blogId);
+                });
+            });
+        }
+
+        function showAddBlogForm() {
+            editingBlogId = null;
+            blogFormTitle.textContent = 'Add New Blog Post';
+            blogForm.reset();
+            if (blogEditor) {
+                blogEditor.root.innerHTML = '';
+            }
+            showSection('blog-form-section');
+        }
+
+        function cancelBlogForm() {
+            showSection('blogs-section');
+        }
+
+        function editBlog(blogId) {
+            const blog = blogs.find(b => b.id === blogId);
+            if (!blog) return;
+            
+            editingBlogId = blogId;
+            blogFormTitle.textContent = 'Edit Blog Post';
+            
+            // Fill form with blog data
+            document.getElementById('blog-title').value = blog.title;
+            document.getElementById('blog-image').value = blog.image;
+            
+            if (blogEditor) {
+                blogEditor.root.innerHTML = blog.content;
+            }
+            
+            showSection('blog-form-section');
+        }
+
+        async function saveBlog(e) {
+            e.preventDefault();
+            
+            const blogData = {
+                title: document.getElementById('blog-title').value,
+                image: document.getElementById('blog-image').value,
+                content: blogEditor ? blogEditor.root.innerHTML : '',
+                date: firebase.firestore.FieldValue.serverTimestamp(),
+                updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+            };
+            
+            try {
+                if (editingBlogId) {
+                    // Update existing blog
+                    await db.collection('blogs').doc(editingBlogId).update(blogData);
+                } else {
+                    // Add new blog
+                    await db.collection('blogs').add(blogData);
+                }
+                
+                // Reload blogs and show blogs section
+                await loadBlogs();
+                showSection('blogs-section');
+                updateStats();
+            } catch (error) {
+                console.error('Error saving blog:', error);
+                alert('Error saving blog. Please try again.');
+            }
+        }
+
+        async function deleteBlog(blogId) {
+            if (!confirm('Are you sure you want to delete this blog post?')) {
+                return;
+            }
+            
+            try {
+                await db.collection('blogs').doc(blogId).delete();
+                await loadBlogs();
+                updateStats();
+            } catch (error) {
+                console.error('Error deleting blog:', error);
+                alert('Error deleting blog. Please try again.');
+            }
+        }
+    </script>
+</body>
+</html>

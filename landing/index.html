@@ -1,0 +1,780 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Free Premium Digital Resources - Instant Access</title>
+    <meta name="description" content="Get 100+ premium templates, courses, and digital tools absolutely free. Instant access after completing a simple task.">
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        :root {
+            --primary: #6366f1;
+            --primary-dark: #4f46e5;
+            --secondary: #a855f7;
+            --accent: #f59e0b;
+            --success: #10b981;
+            --dark: #1e293b;
+            --light: #f8fafc;
+            --gray: #64748b;
+            --white: #ffffff;
+        }
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            line-height: 1.6;
+            color: var(--dark);
+            background: linear-gradient(135deg, #f5f7ff 0%, #eef2ff 100%);
+            overflow-x: hidden;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+        
+        /* Trust Badge */
+        .trust-badge {
+            background: var(--success);
+            color: white;
+            text-align: center;
+            padding: 8px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.9; }
+        }
+        
+        /* Hero Section */
+        .hero {
+            padding: 60px 0 40px;
+            text-align: center;
+        }
+        
+        .hero h1 {
+            font-size: 3rem;
+            font-weight: 900;
+            margin-bottom: 20px;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .hero .subtitle {
+            font-size: 1.3rem;
+            color: var(--gray);
+            margin-bottom: 30px;
+            max-width: 700px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        
+        /* Main CTA Button */
+        .main-cta {
+            display: inline-block;
+            padding: 20px 50px;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            color: white;
+            text-decoration: none;
+            border-radius: 50px;
+            font-size: 1.2rem;
+            font-weight: 700;
+            box-shadow: 0 10px 30px rgba(99, 102, 241, 0.3);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+            animation: glow 2s ease-in-out infinite;
+        }
+        
+        @keyframes glow {
+            0%, 100% { box-shadow: 0 10px 30px rgba(99, 102, 241, 0.3); }
+            50% { box-shadow: 0 10px 40px rgba(99, 102, 241, 0.5); }
+        }
+        
+        .main-cta:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 40px rgba(99, 102, 241, 0.4);
+        }
+        
+        .main-cta i {
+            margin-left: 10px;
+            transition: transform 0.3s ease;
+        }
+        
+        .main-cta:hover i {
+            transform: translateX(5px);
+        }
+        
+        .trust-indicators {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            margin-top: 25px;
+            flex-wrap: wrap;
+        }
+        
+        .trust-indicator {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: var(--gray);
+            font-size: 0.95rem;
+        }
+        
+        .trust-indicator i {
+            color: var(--success);
+        }
+        
+        /* Value Proposition */
+        .value-prop {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            margin: 40px auto;
+            max-width: 900px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        }
+        
+        .value-prop h2 {
+            text-align: center;
+            font-size: 2rem;
+            margin-bottom: 30px;
+            color: var(--dark);
+        }
+        
+        .value-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 30px;
+        }
+        
+        .value-item {
+            text-align: center;
+            padding: 20px;
+            border-radius: 15px;
+            transition: all 0.3s ease;
+        }
+        
+        .value-item:hover {
+            background: var(--light);
+            transform: translateY(-5px);
+        }
+        
+        .value-icon {
+            width: 80px;
+            height: 80px;
+            margin: 0 auto 20px;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            color: white;
+        }
+        
+        .value-item h3 {
+            font-size: 1.2rem;
+            margin-bottom: 10px;
+            color: var(--dark);
+        }
+        
+        .value-item p {
+            color: var(--gray);
+            font-size: 0.95rem;
+        }
+        
+        /* How It Works */
+        .how-it-works {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            margin: 40px auto;
+            max-width: 900px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        }
+        
+        .how-it-works h2 {
+            text-align: center;
+            font-size: 2rem;
+            margin-bottom: 30px;
+            color: var(--dark);
+        }
+        
+        .steps {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 30px;
+            position: relative;
+        }
+        
+        .step {
+            text-align: center;
+            position: relative;
+        }
+        
+        .step-number {
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin: 0 auto 15px;
+        }
+        
+        .step h3 {
+            font-size: 1.1rem;
+            margin-bottom: 10px;
+            color: var(--dark);
+        }
+        
+        .step p {
+            color: var(--gray);
+            font-size: 0.95rem;
+        }
+        
+        /* Testimonials */
+        .testimonials {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            margin: 40px auto;
+            max-width: 900px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        }
+        
+        .testimonials h2 {
+            text-align: center;
+            font-size: 2rem;
+            margin-bottom: 30px;
+            color: var(--dark);
+        }
+        
+        .testimonial-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 30px;
+        }
+        
+        .testimonial {
+            background: var(--light);
+            padding: 25px;
+            border-radius: 15px;
+            position: relative;
+        }
+        
+        .testimonial::before {
+            content: '"';
+            position: absolute;
+            top: 10px;
+            left: 15px;
+            font-size: 3rem;
+            color: var(--primary);
+            opacity: 0.2;
+        }
+        
+        .testimonial p {
+            margin-bottom: 20px;
+            font-style: italic;
+            color: var(--dark);
+            position: relative;
+            z-index: 1;
+        }
+        
+        .testimonial-author {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .author-avatar {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+        
+        .author-info h4 {
+            font-size: 1rem;
+            margin-bottom: 5px;
+            color: var(--dark);
+        }
+        
+        .author-info span {
+            font-size: 0.9rem;
+            color: var(--gray);
+        }
+        
+        /* FAQ */
+        .faq {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            margin: 40px auto;
+            max-width: 900px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        }
+        
+        .faq h2 {
+            text-align: center;
+            font-size: 2rem;
+            margin-bottom: 30px;
+            color: var(--dark);
+        }
+        
+        .faq-item {
+            margin-bottom: 15px;
+            border: 1px solid #e5e7eb;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+        
+        .faq-question {
+            width: 100%;
+            padding: 20px;
+            background: none;
+            border: none;
+            text-align: left;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: all 0.3s ease;
+        }
+        
+        .faq-question:hover {
+            background: var(--light);
+        }
+        
+        .faq-question i {
+            transition: transform 0.3s ease;
+        }
+        
+        .faq-question.active i {
+            transform: rotate(180deg);
+        }
+        
+        .faq-answer {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease;
+        }
+        
+        .faq-answer p {
+            padding: 0 20px 20px;
+            color: var(--gray);
+        }
+        
+        /* Final CTA */
+        .final-cta {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            border-radius: 20px;
+            padding: 50px 40px;
+            margin: 40px auto;
+            max-width: 900px;
+            text-align: center;
+            color: white;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .final-cta::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.05'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+            z-index: 0;
+        }
+        
+        .final-cta h2 {
+            font-size: 2.2rem;
+            margin-bottom: 20px;
+            position: relative;
+            z-index: 1;
+        }
+        
+        .final-cta p {
+            font-size: 1.2rem;
+            margin-bottom: 30px;
+            opacity: 0.9;
+            position: relative;
+            z-index: 1;
+        }
+        
+        .final-cta .main-cta {
+            background: white;
+            color: var(--primary);
+            position: relative;
+            z-index: 1;
+        }
+        
+        .final-cta .main-cta:hover {
+            box-shadow: 0 15px 40px rgba(255, 255, 255, 0.3);
+        }
+        
+        /* Urgency Timer */
+        .urgency-timer {
+            background: #fef3c7;
+            border: 2px solid var(--accent);
+            border-radius: 15px;
+            padding: 20px;
+            margin: 30px auto;
+            max-width: 600px;
+            text-align: center;
+        }
+        
+        .urgency-timer h3 {
+            color: var(--dark);
+            margin-bottom: 15px;
+            font-size: 1.3rem;
+        }
+        
+        .timer {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+        }
+        
+        .time-unit {
+            background: white;
+            border-radius: 10px;
+            padding: 15px;
+            min-width: 70px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+        
+        .time-value {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--primary);
+        }
+        
+        .time-label {
+            font-size: 0.9rem;
+            color: var(--gray);
+            margin-top: 5px;
+        }
+        
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .hero h1 {
+                font-size: 2.2rem;
+            }
+            
+            .hero .subtitle {
+                font-size: 1.1rem;
+            }
+            
+            .main-cta {
+                padding: 16px 40px;
+                font-size: 1.1rem;
+            }
+            
+            .value-prop, .how-it-works, .testimonials, .faq, .final-cta {
+                padding: 30px 20px;
+            }
+            
+            .timer {
+                gap: 10px;
+            }
+            
+            .time-unit {
+                min-width: 60px;
+                padding: 10px;
+            }
+            
+            .time-value {
+                font-size: 1.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Trust Badge -->
+    <div class="trust-badge">
+        <i class="fas fa-check-circle"></i> LIMITED TIME OFFER: 100+ Premium Resources Available For Free
+    </div>
+    
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="container">
+            <h1>Get Premium Digital Resources For FREE</h1>
+            <p class="subtitle">Access 100+ exclusive templates, courses, and digital tools worth over $2,000. Simply complete a quick task to unlock everything instantly.</p>
+            
+            <!-- MAIN CTA BUTTON - ADD YOUR LINK HERE -->
+            <a href="https://5kdigitalassets.com" class="main-cta">
+                Unlock Digital Products Now <i class="fas fa-arrow-right"></i>
+            </a>
+            
+            <div class="trust-indicators">
+                <div class="trust-indicator">
+                    <i class="fas fa-check-circle"></i> 100% Free
+                </div>
+                <div class="trust-indicator">
+                    <i class="fas fa-lock"></i> Secure Process
+                </div>
+                <div class="trust-indicator">
+                    <i class="fas fa-download"></i> Instant Access
+                </div>
+                <div class="trust-indicator">
+                    <i class="fas fa-users"></i> 50,000+ Users
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <!-- Urgency Timer -->
+    <div class="container">
+        <div class="urgency-timer">
+            <h3><i class="fas fa-clock"></i> This Offer Expires In:</h3>
+            <div class="timer">
+                <div class="time-unit">
+                    <div class="time-value" id="hours">23</div>
+                    <div class="time-label">Hours</div>
+                </div>
+                <div class="time-unit">
+                    <div class="time-value" id="minutes">59</div>
+                    <div class="time-label">Minutes</div>
+                </div>
+                <div class="time-unit">
+                    <div class="time-value" id="seconds">59</div>
+                    <div class="time-label">Seconds</div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Value Proposition -->
+    <div class="container">
+        <div class="value-prop">
+            <h2>What You'll Get Instant Access To</h2>
+            <div class="value-grid">
+                <div class="value-item">
+                    <div class="value-icon">
+                        <i class="fas fa-layer-group"></i>
+                    </div>
+                    <h3>Thousands of Premium Digital Assets</h3>
+                    <p>Professional designs for social media, presentations, websites, and more</p>
+                </div>
+                <div class="value-item">
+                    <div class="value-icon">
+                        <i class="fas fa-graduation-cap"></i>
+                    </div>
+                    <h3>Expert Courses</h3>
+                    <p>Learn new skills with courses from industry experts</p>
+                </div>
+                <div class="value-item">
+                    <div class="value-icon">
+                        <i class="fas fa-toolbox"></i>
+                    </div>
+                    <h3>Digital Tools</h3>
+                    <p>Plugins, assets, and tools to boost your productivity</p>
+                </div>
+            </div>
+            
+            <!-- Secondary CTA -->
+            <div style="text-align: center; margin-top: 30px;">
+                <a href="https://5kdigitalassets.com" class="main-cta" style="padding: 16px 40px; font-size: 1.1rem;">
+                    Unlock Now <i class="fas fa-gift"></i>
+                </a>
+            </div>
+        </div>
+    </div>
+    
+    <!-- How It Works -->
+    <div class="container">
+        <div class="how-it-works">
+            <h2>How It Works - 3 Simple Steps</h2>
+            <div class="steps">
+                <div class="step">
+                    <div class="step-number">1</div>
+                    <h3>Click The Button</h3>
+                    <p>Click any "Unlock Now" button on this page to get started</p>
+                </div>
+                <div class="step">
+                    <div class="step-number">2</div>
+                    <h3>Select the Assets you want and Complete Quick Task</h3>
+                    <p>Install a free app or complete a short survey (takes 60-90 seconds)</p>
+                </div>
+                <div class="step">
+                    <div class="step-number">3</div>
+                    <h3>Instant Access</h3>
+                    <p>Get immediate access to each premium resources</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Testimonials -->
+    <div class="container">
+        <div class="testimonials">
+            <h2>Real Users, Real Results</h2>
+            <div class="testimonial-grid">
+                <div class="testimonial">
+                    <p>"Got access to amazing templates that saved me hours of work. The task took less than 2 minutes. Best free resource site ever!"</p>
+                    <div class="testimonial-author">
+                        <img src="https://picsum.photos/seed/user1/100/100.jpg" alt="Sarah" class="author-avatar">
+                        <div class="author-info">
+                            <h4>Sarah Johnson</h4>
+                            <span>Marketing Manager</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="testimonial">
+                    <p>"The courses I accessed were incredibly valuable. Learned skills that helped me get a promotion. All for free!"</p>
+                    <div class="testimonial-author">
+                        <img src="https://picsum.photos/seed/user2/100/100.jpg" alt="Mike" class="author-avatar">
+                        <div class="author-info">
+                            <h4>Mike Chen</h4>
+                            <span>UX Designer</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="testimonial">
+                    <p>"As a freelancer, these resources have been game-changing. I can offer better services without spending money."</p>
+                    <div class="testimonial-author">
+                        <img src="https://picsum.photos/seed/user3/100/100.jpg" alt="Emily" class="author-avatar">
+                        <div class="author-info">
+                            <h4>Emily Rodriguez</h4>
+                            <span>Freelancer</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- FAQ -->
+    <div class="container">
+        <div class="faq">
+            <h2>Frequently Asked Questions</h2>
+            <div class="faq-item">
+                <button class="faq-question">
+                    Is it really 100% free?
+                    <i class="fas fa-chevron-down"></i>
+                </button>
+                <div class="faq-answer">
+                    <p>Yes! You get full access to all digital products for free. We only ask you to complete a simple task to support our partners.</p>
+                </div>
+            </div>
+            <div class="faq-item">
+                <button class="faq-question">
+                    What kind of tasks are required?
+                    <i class="fas fa-chevron-down"></i>
+                </button>
+                <div class="faq-answer">
+                    <p>Tasks are quick and easy - typically installing a free app or completing a 1-2 minute survey. No purchases required.</p>
+                </div>
+            </div>
+            <div class="faq-item">
+                <button class="faq-question">
+                    How do I get my resources?
+                    <i class="fas fa-chevron-down"></i>
+                </button>
+                <div class="faq-answer">
+                    <p>Instantly! Once your task is verified, you'll get immediate access to download all resources.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Final CTA -->
+    <div class="container">
+        <div class="final-cta">
+            <h2>Don't Miss This Opportunity!</h2>
+            <p>If you prefer to buy these assets each or all in one bundle, you can visit our official store</p>
+            
+            <!-- FINAL CTA BUTTON - ADD YOUR LINK HERE -->
+            <a href="https://store.5kdigitalassets.com" class="main-cta">
+                Eplore Now <i class="fas fa-lock-open"></i>
+            </a>
+        </div>
+    </div>
+    
+    <script>
+        // FAQ Accordion
+        document.querySelectorAll('.faq-question').forEach(question => {
+            question.addEventListener('click', () => {
+                const answer = question.nextElementSibling;
+                const isActive = question.classList.contains('active');
+                
+                // Close all FAQs
+                document.querySelectorAll('.faq-question').forEach(q => {
+                    q.classList.remove('active');
+                    q.nextElementSibling.style.maxHeight = '0';
+                });
+                
+                // Open clicked FAQ if it wasn't active
+                if (!isActive) {
+                    question.classList.add('active');
+                    answer.style.maxHeight = answer.scrollHeight + 'px';
+                }
+            });
+        });
+        
+        // Countdown Timer
+        function updateTimer() {
+            const now = new Date();
+            const tomorrow = new Date(now);
+            tomorrow.setDate(tomorrow.getDate() + 1);
+            tomorrow.setHours(0, 0, 0, 0);
+            
+            const diff = tomorrow - now;
+            
+            const hours = Math.floor(diff / (1000 * 60 * 60));
+            const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+            const seconds = Math.floor((diff % (1000 * 60)) / 1000);
+            
+            document.getElementById('hours').textContent = hours.toString().padStart(2, '0');
+            document.getElementById('minutes').textContent = minutes.toString().padStart(2, '0');
+            document.getElementById('seconds').textContent = seconds.toString().padStart(2, '0');
+        }
+        
+        updateTimer();
+        setInterval(updateTimer, 1000);
+        
+        // Add smooth scroll behavior for anchor links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            });
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Login - 5K Digital Assets</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        :root {
+            --primary: #4361ee;
+            --secondary: #3a0ca3;
+            --accent: #7209b7;
+            --light: #f8f9fa;
+            --dark: #212529;
+            --gray: #6c757d;
+            --light-gray: #e9ecef;
+            --danger: #e63946;
+        }
+
+        body {
+            background: linear-gradient(135deg, #2d3748, #1a202c); /* Dark gray gradient */
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 1rem;
+        }
+
+        .login-container {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            padding: 2.5rem;
+            width: 100%;
+            max-width: 400px;
+        }
+
+        .login-header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .login-header h1 {
+            color: var(--primary);
+            font-size: 1.8rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .login-header p {
+            color: var(--gray);
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+            color: var(--dark);
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 0.8rem;
+            border: 1px solid var(--light-gray);
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: border-color 0.3s;
+        }
+
+        .form-group input:focus {
+            outline: none;
+            border-color: var(--primary);
+        }
+
+        .login-btn {
+            width: 100%;
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            padding: 1rem;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .login-btn:hover {
+            background-color: var(--secondary);
+        }
+
+        .login-btn:disabled {
+            background-color: var(--gray);
+            cursor: not-allowed;
+        }
+
+        .error-message {
+            background-color: rgba(230, 57, 70, 0.1);
+            color: var(--danger);
+            padding: 0.8rem;
+            border-radius: 6px;
+            margin-bottom: 1rem;
+            text-align: center;
+            display: none;
+        }
+
+        .loading {
+            display: none;
+            text-align: center;
+            margin-bottom: 1rem;
+        }
+
+        .loading i {
+            color: var(--primary);
+            font-size: 1.5rem;
+        }
+
+        .forgot-password {
+            text-align: center;
+            margin-top: 1.5rem;
+            padding-top: 1.5rem;
+            border-top: 1px solid var(--light-gray);
+        }
+
+        .forgot-password a {
+            color: var(--primary);
+            text-decoration: none;
+            font-size: 0.9rem;
+            transition: color 0.3s;
+        }
+
+        .forgot-password a:hover {
+            color: var(--secondary);
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <div class="login-container">
+        <div class="login-header">
+            <h1>Admin Login</h1>
+            <p>5K Digital Assets</p>
+        </div>
+
+        <div class="error-message" id="errorMessage"></div>
+        
+        <div class="loading" id="loading">
+            <i class="fas fa-spinner fa-spin"></i>
+        </div>
+
+        <form id="loginForm">
+            <div class="form-group">
+                <label for="email">Enter Email</label>
+                <input type="email" id="email" name="email" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="password">Enter Password</label>
+                <input type="password" id="password" name="password" required>
+            </div>
+            
+            <button type="submit" class="login-btn" id="loginBtn">Login</button>
+        </form>
+
+        <div class="forgot-password">
+            <a href="#" id="forgotPasswordLink">
+                <i class="fas fa-key"></i> Forgot Password?
+            </a>
+        </div>
+    </div>
+
+    <script>
+        // Firebase configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyCA6yVgH1snvuW-BOGbi4YX8xIGBRU4TKQ",
+            authDomain: "digital-studio-19b83.firebaseapp.com",
+            projectId: "digital-studio-19b83",
+            storageBucket: "digital-studio-19b83.firebasestorage.app",
+            messagingSenderId: "156700490401",
+            appId: "1:156700490401:web:aaacdae02f2b8ee3530ee0",
+            measurementId: "G-3GKD8FM4D9"
+        };
+
+        // Initialize Firebase
+        firebase.initializeApp(firebaseConfig);
+        const auth = firebase.auth();
+
+        // DOM Elements
+        const loginForm = document.getElementById('loginForm');
+        const errorMessage = document.getElementById('errorMessage');
+        const loading = document.getElementById('loading');
+        const loginBtn = document.getElementById('loginBtn');
+        const forgotPasswordLink = document.getElementById('forgotPasswordLink');
+
+        // Handle form submission
+        loginForm.addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            
+            // Show loading
+            loading.style.display = 'block';
+            loginBtn.disabled = true;
+            errorMessage.style.display = 'none';
+            
+            try {
+                // Sign in with email and password
+                await auth.signInWithEmailAndPassword(email, password);
+                
+                // Redirect to admin dashboard
+                window.location.href = 'admin.html';
+            } catch (error) {
+                // Handle errors
+                errorMessage.textContent = getErrorMessage(error.code);
+                errorMessage.style.display = 'block';
+            } finally {
+                // Hide loading
+                loading.style.display = 'none';
+                loginBtn.disabled = false;
+            }
+        });
+
+        // Function to send password reset email
+        function sendPasswordReset(email) {
+            auth.sendPasswordResetEmail(email)
+                .then(() => {
+                    // SUCCESS: Notify the user
+                    alert(`Password reset email sent to ${email}. Check your inbox (and spam folder)!`);
+                })
+                .catch((error) => {
+                    // ERROR: Handle cases like "User not found"
+                    console.error("Password Reset Error:", error);
+                    let errorMessage = "Error sending reset email. ";
+                    
+                    switch (error.code) {
+                        case 'auth/user-not-found':
+                            errorMessage += "No account found with this email address.";
+                            break;
+                        case 'auth/invalid-email':
+                            errorMessage += "Invalid email address format.";
+                            break;
+                        case 'auth/too-many-requests':
+                            errorMessage += "Too many attempts. Please try again later.";
+                            break;
+                        default:
+                            errorMessage += "Please try again.";
+                    }
+                    
+                    alert(errorMessage);
+                });
+        }
+
+        // Handle forgot password link click
+        forgotPasswordLink.addEventListener('click', (e) => {
+            e.preventDefault(); // Prevents the link from navigating away
+
+            // 1. Check if there's already an email entered in the form
+            const emailField = document.getElementById('email');
+            const existingEmail = emailField.value.trim();
+            
+            // 2. Prompt the user for the email address (pre-fill with existing if available)
+            const userEmail = prompt("Please enter the email address for your account:", existingEmail);
+
+            // 3. Validate and send the reset email
+            if (userEmail && userEmail.trim() !== '') {
+                sendPasswordReset(userEmail.trim());
+            } else if (userEmail !== null) {
+                // If the user entered an empty string
+                alert("Please enter a valid email address.");
+            }
+        });
+
+        // Get user-friendly error messages
+        function getErrorMessage(errorCode) {
+            switch (errorCode) {
+                case 'auth/invalid-email':
+                    return 'Invalid email address.';
+                case 'auth/user-disabled':
+                    return 'This account has been disabled.';
+                case 'auth/user-not-found':
+                    return 'No account found with this email.';
+                case 'auth/wrong-password':
+                    return 'Incorrect password.';
+                case 'auth/too-many-requests':
+                    return 'Too many failed attempts. Please try again later.';
+                default:
+                    return 'Login failed. Please try again.';
+            }
+        }
+    </script>
+</body>
+</html>
